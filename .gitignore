@@ -1,0 +1,9 @@
+target
+test-output
+.classpath
+.settings
+.project
+.clover
+.externalToolBuilders
+src/main/webapp/META-INF/MANIFEST.MF
+.faces-config.xml.jsfdia
