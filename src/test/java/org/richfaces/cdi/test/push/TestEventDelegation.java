@@ -32,16 +32,6 @@ public class TestEventDelegation {
     PushEvent<String> pushEvent;
 
     @Inject
-    @Push(TOPIC_NAME)
-    @CustomQualifier1("param1")
-    PushEvent<String> pushEventQualified;
-
-    @Inject
-    @Push(TOPIC_NAME)
-    @CustomQualifier2("param2")
-    PushEvent<String> pushEventQualifiedTwice;
-
-    @Inject
     PushEventConsumer consumer;
 
     @Test
