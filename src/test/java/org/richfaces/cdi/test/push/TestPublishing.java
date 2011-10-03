@@ -2,24 +2,22 @@ package org.richfaces.cdi.test.push;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.LinkedList;
-
-import javax.enterprise.event.Observes;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.richfaces.application.push.MessageException;
 import org.richfaces.application.push.TopicKey;
 import org.richfaces.cdi.push.Push;
-import org.richfaces.cdi.push.PushEvent;
+import org.richfaces.cdi.push.PushMessage;
+import org.richfaces.cdi.push.producer.PushEventObserver;
 import org.richfaces.cdi.push.producer.PushEventProducer;
-import org.richfaces.cdi.test.push.MockTopicsContextProducer.MockTopicsContext;
+import org.richfaces.cdi.push.producer.TopicKeyProducer;
 
 @RunWith(Arquillian.class)
 public class TestPublishing {
@@ -27,33 +25,36 @@ public class TestPublishing {
     @Deployment
     public static WebArchive createTestArchive() {
         return ShrinkWrap.create(WebArchive.class, "test.war").addPackage(Push.class.getPackage())
-                .addClass(PushEventProducer.class).addClass(MockTopicsContextProducer.class)
+                .addClass(PushEventProducer.class).addClass(PushEventObserver.class).addClass(MockTopicsContext.class)
+                .addClass(TopicKeyProducer.class)
                 .addAsManifestResource("META-INF/services/javax.enterprise.inject.spi.Extension");
     }
 
     private static final String TOPIC_NAME_1 = "sampleTopic1";
-    private static final String TOPIC_NAME_2 = "sampleTopic2";
+
+    @Inject
+    Event<PushMessage> event;
 
     @Inject
     @Push(TOPIC_NAME_1)
-    PushEvent<String> pushEvent1;
+    PushMessage message;
 
     @Inject
-    @Push(TOPIC_NAME_2)
-    PushEvent<String> pushEvent2;
+    @Push(TOPIC_NAME_1)
+    TopicKey topic;
 
     @Inject
     private MockTopicsContext topicsContext;
 
     @Test
-    public void testTopicPublishing() throws MessageException {
-        pushEvent1.fire("test");
+    public void testTopicPublishingWithInjectedPushEvent() throws MessageException {
+        event.fire(message.payload("test"));
 
         assertEquals(1, topicsContext.getMessages().size());
         assertEquals(new TopicKey(TOPIC_NAME_1), topicsContext.getLastMessage().getTopicKey());
         assertEquals("test", topicsContext.getLastMessage().getData());
 
-        pushEvent1.fire("anotherTest");
+        event.fire(message.payload("anotherTest"));
 
         assertEquals(2, topicsContext.getMessages().size());
         assertEquals(new TopicKey(TOPIC_NAME_1), topicsContext.getLastMessage().getTopicKey());
@@ -61,17 +62,17 @@ public class TestPublishing {
     }
 
     @Test
-    public void testTwoTopicsPublishing() throws MessageException {
-        pushEvent1.fire("test");
+    public void testTopicPublishingWithInjectedTopicKey() throws MessageException {
+        event.fire(new PushMessage(topic, "test"));
 
         assertEquals(1, topicsContext.getMessages().size());
         assertEquals(new TopicKey(TOPIC_NAME_1), topicsContext.getLastMessage().getTopicKey());
         assertEquals("test", topicsContext.getLastMessage().getData());
 
-        pushEvent2.fire("anotherTest");
+        event.fire(new PushMessage(topic, "anotherTest"));
 
         assertEquals(2, topicsContext.getMessages().size());
-        assertEquals(new TopicKey(TOPIC_NAME_2), topicsContext.getLastMessage().getTopicKey());
+        assertEquals(new TopicKey(TOPIC_NAME_1), topicsContext.getLastMessage().getTopicKey());
         assertEquals("anotherTest", topicsContext.getLastMessage().getData());
     }
 }
