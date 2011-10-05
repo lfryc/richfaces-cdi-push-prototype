@@ -19,28 +19,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.richfaces.cdi.push.producer;
+package org.richfaces.cdi.test.push.qualified;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
-
-import org.richfaces.application.push.TopicsContext;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.Observes;
 
 /**
- * Producer for {@link TopicsContext} reference.
- * 
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
  */
-public class TopicsContextProducer {
-
-    /**
-     * Produces application scoped {@link TopicsContext} reference.
-     * 
-     * @return application scoped {@link TopicsContext} reference.
-     */
-    @Produces
-    @ApplicationScoped
-    public TopicsContext getTopicsContext() {
-        return TopicsContext.lookup();
+@RequestScoped
+public class QualifiedPushEventObserver {
+    
+    private Object lastEvent;
+    
+    public void observePushEvent(@Observes @CustomQualifier Object qualifiedEvent) {
+        lastEvent = qualifiedEvent;
+    }
+    
+    public Object getLastEvent() {
+        return lastEvent;
     }
 }

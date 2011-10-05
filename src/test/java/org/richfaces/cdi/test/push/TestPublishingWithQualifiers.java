@@ -22,6 +22,7 @@
 package org.richfaces.cdi.test.push;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -32,64 +33,49 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.richfaces.application.push.MessageException;
 import org.richfaces.application.push.TopicKey;
 import org.richfaces.cdi.push.Push;
+import org.richfaces.cdi.test.push.qualified.CustomQualifier;
+import org.richfaces.cdi.test.push.qualified.QualifiedPushEventObserver;
 
 /**
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
  */
 @RunWith(Arquillian.class)
-public class TestPublishing {
+public class TestPublishingWithQualifiers {
 
     @Deployment
     public static WebArchive createTestArchive() {
         return ShrinkWrap.create(WebArchive.class, "test.war").addPackage(Push.class.getPackage())
-                .addClass(MockTopicsContext.class)
+                .addClass(MockTopicsContext.class).addPackage(CustomQualifier.class.getPackage())
                 .addAsManifestResource("META-INF/services/javax.enterprise.inject.spi.Extension");
     }
 
-    private static final String TOPIC_NAME_1 = "sampleTopic1";
-    private static final String TOPIC_NAME_2 = "sampleTopic2";
+    private static final String TOPIC_NAME = "topic";
 
     @Inject
-    @Push(TOPIC_NAME_1)
-    Event<String> event1;
+    @CustomQualifier
+    @Push(TOPIC_NAME)
+    Event<String> event;
 
     @Inject
-    @Push(TOPIC_NAME_2)
-    Event<String> event2;
+    MockTopicsContext topicsContext;
 
     @Inject
-    private MockTopicsContext topicsContext;
+    QualifiedPushEventObserver observer;
 
     @Test
-    public void testTopicPublishing() throws MessageException {
-        event1.fire("test");
-
-        assertEquals(1, topicsContext.getMessages().size());
-        assertEquals(new TopicKey(TOPIC_NAME_1), topicsContext.getLastMessage().getTopicKey());
-        assertEquals("test", topicsContext.getLastMessage().getData());
-
-        event1.fire("anotherTest");
-
-        assertEquals(2, topicsContext.getMessages().size());
-        assertEquals(new TopicKey(TOPIC_NAME_1), topicsContext.getLastMessage().getTopicKey());
-        assertEquals("anotherTest", topicsContext.getLastMessage().getData());
+    public void testQualifiedPushEventObserving() {
+        event.fire("test");
+        assertNotNull(observer.getLastEvent());
+        assertEquals("test", observer.getLastEvent());
     }
 
     @Test
-    public void testTwoTopicsPublishing() throws MessageException {
-        event1.fire("test");
-
+    public void testQualifiedPushEventPublishing() {
+        event.fire("test");
         assertEquals(1, topicsContext.getMessages().size());
-        assertEquals(new TopicKey(TOPIC_NAME_1), topicsContext.getLastMessage().getTopicKey());
+        assertEquals(new TopicKey(TOPIC_NAME), topicsContext.getLastMessage().getTopicKey());
         assertEquals("test", topicsContext.getLastMessage().getData());
-
-        event2.fire("anotherTest");
-
-        assertEquals(2, topicsContext.getMessages().size());
-        assertEquals(new TopicKey(TOPIC_NAME_2), topicsContext.getLastMessage().getTopicKey());
-        assertEquals("anotherTest", topicsContext.getLastMessage().getData());
     }
 }

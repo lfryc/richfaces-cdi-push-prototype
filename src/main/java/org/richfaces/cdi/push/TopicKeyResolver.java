@@ -19,28 +19,31 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.richfaces.cdi.push.producer;
+package org.richfaces.cdi.push;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
 
-import org.richfaces.application.push.TopicsContext;
+import org.richfaces.application.push.TopicKey;
 
 /**
- * Producer for {@link TopicsContext} reference.
+ * Bean for resolving {@link TopicKey} from {@link Push} annotation properties.
  * 
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
  */
-public class TopicsContextProducer {
+@ApplicationScoped
+public class TopicKeyResolver {
 
     /**
-     * Produces application scoped {@link TopicsContext} reference.
+     * Resolves {@link TopicKey} from {@link Push} annotation properties.
      * 
-     * @return application scoped {@link TopicsContext} reference.
+     * @param pushAnnotation used for creating adequate {@link TopicKey}
+     * @return {@link TopicKey} resolved from given {@link Push} annotation given
      */
-    @Produces
-    @ApplicationScoped
-    public TopicsContext getTopicsContext() {
-        return TopicsContext.lookup();
+    public TopicKey resolveTopicKey(Push pushAnnotation) {
+        if ("".equals(pushAnnotation.subtopic())) {
+            return new TopicKey(pushAnnotation.value());
+        } else {
+            return new TopicKey(pushAnnotation.value(), pushAnnotation.subtopic());
+        }
     }
 }
