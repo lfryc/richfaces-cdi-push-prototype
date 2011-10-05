@@ -28,14 +28,14 @@ import org.richfaces.application.push.TopicsContext;
 
 /**
  * Producer for {@link TopicsContext} reference.
- * 
+ *
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
  */
 public class TopicsContextProducer {
 
     /**
      * Produces application scoped {@link TopicsContext} reference.
-     * 
+     *
      * @return application scoped {@link TopicsContext} reference.
      */
     @Produces

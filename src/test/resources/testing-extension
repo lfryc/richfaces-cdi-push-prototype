@@ -1,0 +1,2 @@
+org.richfaces.cdi.test.push.TestingDependencyRegistrationExtension
+org.richfaces.cdi.push.PushCDIExtension

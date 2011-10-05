@@ -27,7 +27,7 @@ import org.richfaces.application.push.TopicKey;
 
 /**
  * Bean for resolving {@link TopicKey} from {@link Push} annotation properties.
- * 
+ *
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
  */
 @ApplicationScoped
@@ -35,15 +35,15 @@ public class TopicKeyResolver {
 
     /**
      * Resolves {@link TopicKey} from {@link Push} annotation properties.
-     * 
+     *
      * @param pushAnnotation used for creating adequate {@link TopicKey}
      * @return {@link TopicKey} resolved from given {@link Push} annotation given
      */
     public TopicKey resolveTopicKey(Push pushAnnotation) {
         if ("".equals(pushAnnotation.subtopic())) {
-            return new TopicKey(pushAnnotation.value());
+            return new TopicKey(pushAnnotation.topic());
         } else {
-            return new TopicKey(pushAnnotation.value(), pushAnnotation.subtopic());
+            return new TopicKey(pushAnnotation.topic(), pushAnnotation.subtopic());
         }
     }
 }

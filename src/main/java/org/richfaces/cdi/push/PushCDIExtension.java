@@ -49,18 +49,18 @@ import org.richfaces.application.push.TopicsContext;
  * <p>
  * CDI Extension for observing CDI events and delegating events with their payload to Push message bus.
  * </p>
- * 
+ *
  * <p>
  * This extension was introduced as workaround for feature missing in CDI 1.0 (<a
  * href="https://issues.jboss.org/browse/CDI-36">CDI-36</a>).
  * </p>
- * 
+ *
  * <p>
  * Thus this extension listens on injection target scanning process for all {@link Push} annotations defined on injection points
  * and then registers observer methods designed for one specific topic. As consequence is that this implementation can't be used
  * for observing dynamically created topic names.
  * </p>
- * 
+ *
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
  */
 public class PushCDIExtension implements Extension {
@@ -76,7 +76,7 @@ public class PushCDIExtension implements Extension {
 
     /**
      * Stores all {@link Push} annotations on injection points annotated by {@link Push}
-     * 
+     *
      * @param injectionPoints injection points to be scanned
      */
     private void scanForPushAnnotations(Collection<InjectionPoint> injectionPoints) {
@@ -90,7 +90,7 @@ public class PushCDIExtension implements Extension {
 
     /**
      * Register observer method {@link PushObserverMethod} for each {@link Push} annotation found in annotation scanning.
-     * 
+     *
      * @param event
      * @param beanManager
      */
@@ -104,21 +104,21 @@ public class PushCDIExtension implements Extension {
      * <p>
      * This class remembers {@link BeanManager} and {@link Push} annotation.
      * </p>
-     * 
+     *
      * <p>
      * {@link BeanManager} is needed to get reference to {@link TopicKeyResolver} and {@link TopicsContext}.
      * </p>
-     * 
+     *
      * <p>
      * {@link TopicKeyResolver} is then used to resolve {@link TopicKey} from {@link Push} annotation.
      * </p>
-     * 
+     *
      * <p>
      * {@link TopicsContext} is used for publishing into RichFaces Push message bus.
      * </p>
-     * 
+     *
      * @author lfryc
-     * 
+     *
      */
     private static class PushObserverMethod implements ObserverMethod<Object> {
 
@@ -132,7 +132,7 @@ public class PushCDIExtension implements Extension {
 
         /**
          * Publishes message to topic determined by {@link TopicKey} using {@link TopicsContext}.
-         * 
+         *
          * References to {@link TopicsContext} and {@link TopicKeyResolver} (needed for {@link TopicKey} resolution) are done
          * through {@link BeanManager}.
          */
@@ -148,7 +148,7 @@ public class PushCDIExtension implements Extension {
         }
 
         public Class<?> getBeanClass() {
-            return null;
+            return PushObserverMethod.class;
         }
 
         public Type getObservedType() {

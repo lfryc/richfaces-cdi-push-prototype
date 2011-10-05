@@ -25,7 +25,7 @@ import org.richfaces.application.push.MessageException;
 
 /**
  * Unchecked exception wrapper for {@link MessageException}.
- * 
+ *
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
  */
 public class PushCDIMessageException extends RuntimeException {

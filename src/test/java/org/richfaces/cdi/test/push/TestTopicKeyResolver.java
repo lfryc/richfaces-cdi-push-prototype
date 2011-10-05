@@ -78,7 +78,7 @@ public class TestTopicKeyResolver {
             this.subtopic = subtopic;
         }
 
-        public String value() {
+        public String topic() {
             return topic;
         }
 

@@ -19,24 +19,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.richfaces.cdi.test.push.qualified;
+package org.richfaces.cdi.test.push;
 
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.Extension;
+
+import org.richfaces.cdi.push.Push;
+import org.richfaces.cdi.push.TopicKeyResolver;
 
 /**
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
  */
-@RequestScoped
-public class QualifiedPushEventObserver {
+public class TestingDependencyRegistrationExtension implements Extension {
 
-    private Object lastEvent;
-
-    public void observePushEvent(@Observes @CustomQualifier Object qualifiedEvent) {
-        lastEvent = qualifiedEvent;
-    }
-
-    public Object getLastEvent() {
-        return lastEvent;
+    /**
+     * Registers all necessary beans required by this extension.
+     */
+    public void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd, BeanManager beanManager) {
+        bbd.addAnnotatedType(beanManager.createAnnotatedType(Push.class));
+        bbd.addAnnotatedType(beanManager.createAnnotatedType(TopicKeyResolver.class));
+        bbd.addAnnotatedType(beanManager.createAnnotatedType(MockTopicsContext.class));
     }
 }

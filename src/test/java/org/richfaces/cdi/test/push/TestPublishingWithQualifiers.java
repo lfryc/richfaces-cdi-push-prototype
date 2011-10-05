@@ -29,7 +29,6 @@ import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,16 +45,16 @@ public class TestPublishingWithQualifiers {
 
     @Deployment
     public static WebArchive createTestArchive() {
-        return ShrinkWrap.create(WebArchive.class, "test.war").addPackage(Push.class.getPackage())
-                .addClass(MockTopicsContext.class).addPackage(CustomQualifier.class.getPackage())
-                .addAsManifestResource("META-INF/services/javax.enterprise.inject.spi.Extension");
+        WebArchive webArchive = PublishingTestCase.createBaseTestArchive().addPackage(CustomQualifier.class.getPackage());
+
+        return webArchive;
     }
 
     private static final String TOPIC_NAME = "topic";
 
     @Inject
     @CustomQualifier
-    @Push(TOPIC_NAME)
+    @Push(topic = TOPIC_NAME)
     Event<String> event;
 
     @Inject

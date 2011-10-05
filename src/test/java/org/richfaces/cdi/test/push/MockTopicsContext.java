@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 
-import org.jboss.weld.exceptions.UnsupportedOperationException;
 import org.richfaces.application.push.MessageException;
 import org.richfaces.application.push.Topic;
 import org.richfaces.application.push.TopicKey;
@@ -37,6 +36,10 @@ import org.richfaces.application.push.TopicsContext;
  */
 @RequestScoped
 public class MockTopicsContext extends TopicsContext {
+
+    public MockTopicsContext() {
+        // prevents to load the bean as CDI bean
+    }
 
     LinkedList<Message> messages = new LinkedList<Message>();
 

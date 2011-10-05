@@ -34,7 +34,7 @@ import javax.inject.Qualifier;
 
 /**
  * Defines end-point for messages going through Push message bus.
- * 
+ *
  * @author <a href="mailto:lfryc@redhat.com">Lukas Fryc</a>
  */
 @Retention(RUNTIME)
@@ -45,15 +45,15 @@ public @interface Push {
     /**
      * Topic in form of topic name (e.g. "topic") or topic address ("subtopic@topic")
      */
-    String value();
+    String topic();
 
     /**
      * <p>
      * Subtopic in form of subtopic name (e.g. "subtopic").
      * </p>
-     * 
+     *
      * <p>
-     * Subtopic might not be defined, when {@link #value()} has form of full topic address, it means when it contains subtopic
+     * Subtopic might not be defined, when {@link #topic()} has form of full topic address, it means when it contains subtopic
      * already (e.g. "subtopic@topic").
      */
     String subtopic() default "";
